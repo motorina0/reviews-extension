@@ -79,7 +79,7 @@
                 <div>{{props.row.amount}}</div>
               </q-td>
             </q-tr>
-            <q-tr v-show="props.row.expanded" :props="props">
+            <q-tr v-if="props.row.expanded" :props="props">
               <q-td colspan="100%">
                 <div class="row items-center q-mt-md q-mb-lg">
                   <div class="col-2 q-pr-lg">ID:</div>

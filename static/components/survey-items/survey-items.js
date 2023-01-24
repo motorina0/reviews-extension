@@ -88,7 +88,9 @@ async function surveyItems(path) {
     },
 
     created: async function () {
-      await this.getSurveyItems()
+      if (this.adminkey || this.inkey) {
+        await this.getSurveyItems()
+      }
     }
   })
 }

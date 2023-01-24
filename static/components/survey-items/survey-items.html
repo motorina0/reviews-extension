@@ -8,6 +8,7 @@
         @click="showNewItemDialog()"
         >Add Item</q-btn
       >
+      <q-separator class="q-mt-sm"></q-separator>
     </div>
   </div>
   <div class="row items-center no-wrap q-mb-md">
@@ -26,9 +27,9 @@
                 @click="deleteSurveyItem(item.id)"
               ></q-btn>
             </q-item-label>
-            <q-item-label caption>{{item.description}}</q-item-label>
+            <q-item-label caption>{{item.description}} </q-item-label>
 
-            <q-separator></q-separator>
+            <q-separator class="q-mt-sm"></q-separator>
           </q-item-section>
         </q-item>
       </q-list>
