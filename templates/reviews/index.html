@@ -58,14 +58,10 @@
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width></q-th>
-              <q-th auto-width>Status </q-th>
-              <q-th auto-width>Title</q-th>
-              <q-th auto-width>Time Left (hh:mm)</q-th>
-              <q-th auto-width>Time To Pay (hh:mm)</q-th>
-              <q-th auto-width>Amount To Pay</q-th>
-              <q-th auto-width>Balance</q-th>
-              <q-th auto-width>Pending Balance</q-th>
-              <q-th auto-width>Onchain Address</q-th>
+              <q-th auto-width>Name </q-th>
+              <q-th auto-width>Description</q-th>
+              <q-th auto-width>Type</q-th>
+              <q-th auto-width>Amount (sats)</q-th>
               <q-th auto-width></q-th>
             </q-tr>
           </template>
@@ -174,12 +170,12 @@
                   </div>
                 </div>
                 <div
-                  v-if="props.row.lnbitswallet"
+                  v-if="props.row.wallet"
                   class="row items-center q-mt-md q-mb-lg"
                 >
                   <div class="col-2 q-pr-lg">LNbits Wallet:</div>
                   <div class="col-4 q-pr-lg">
-                    {{getLNbitsWalletName(props.row.lnbitswallet)}}
+                    {{getwalletName(props.row.wallet)}}
                   </div>
                 </div>
 
@@ -328,7 +324,7 @@
           filled
           dense
           emit-value
-          v-model="formDialogSurvey.data.lnbitsWallet"
+          v-model="formDialogSurvey.data.wallet"
           :options="g.user.walletOptions"
           label="Wallet *"
         >
@@ -346,7 +342,7 @@
             color="primary"
             :disable="!formDialogSurvey.data.name || 
             !formDialogSurvey.data.type ||
-            !formDialogSurvey.data.lnbitsWallet ||
+            !formDialogSurvey.data.wallet ||
             !formDialogSurvey.data.amount"
             type="submit"
             >Create Survey</q-btn
@@ -360,8 +356,7 @@
   </q-dialog>
 </div>
 {% endblock %} {% block scripts %} {{ window_vars(user) }}
-
-<style></style>
+<script src="{{ url_for('reviews_static', path='js/utils.js') }}"></script>
 
 <script>
   Vue.component(VueQrcode.name, VueQrcode)
@@ -381,7 +376,7 @@
             description: '',
             type: '',
             amount: '',
-            lnbitsWallet: ''
+            wallet: ''
           }
         },
         surveyTypes: [
@@ -402,70 +397,28 @@
         surveysTable: {
           columns: [
             {
-              name: 'theId',
+              name: 'name',
               align: 'left',
-              label: 'ID',
-              field: 'id'
+              label: 'Name',
+              field: 'name'
             },
             {
               name: 'description',
               align: 'left',
-              label: 'Title',
+              label: 'Description',
               field: 'description'
             },
             {
-              name: 'timeLeft',
+              name: 'type',
               align: 'left',
-              label: 'Time left',
-              field: 'timeLeft'
-            },
-            {
-              name: 'time to pay',
-              align: 'left',
-              label: 'Time to Pay',
-              field: 'time'
+              label: 'Type',
+              field: 'type'
             },
             {
               name: 'amount',
               align: 'left',
-              label: 'Amount to pay',
+              label: 'Amount',
               field: 'amount'
-            },
-            {
-              name: 'balance',
-              align: 'left',
-              label: 'Balance',
-              field: 'balance'
-            },
-            {
-              name: 'pendingBalance',
-              align: 'left',
-              label: 'Pending Balance',
-              field: 'pendingBalance'
-            },
-            {
-              name: 'onchain address',
-              align: 'left',
-              label: 'Onchain Address',
-              field: 'onchainaddress'
-            },
-            {
-              name: 'LNbits wallet',
-              align: 'left',
-              label: 'LNbits wallet',
-              field: 'lnbitswallet'
-            },
-            {
-              name: 'Webhook link',
-              align: 'left',
-              label: 'Webhook link',
-              field: 'webhook'
-            },
-            {
-              name: 'Paid link',
-              align: 'left',
-              label: 'Paid link',
-              field: 'completelink'
             }
           ],
           pagination: {
@@ -481,7 +434,7 @@
           description: '',
           type: this.surveyTypes[0],
           amount: '100',
-          lnbitsWallet: ''
+          wallet: ''
         }
       },
       openCreateSurveyDialog: function () {
@@ -506,24 +459,19 @@
         }
       },
 
-      createSurvey: async function (wallet, data) {
+      createSurvey: async function (data) {
+        console.log('### data', data)
         try {
+          data.type = data.type.id
           const resp = await LNbits.api.request(
             'POST',
             '/reviews/api/v1/survey',
-            wallet,
+            this.g.user.wallets[0].adminkey,
             data
           )
 
           this.surveyLinks.unshift(mapSurvey(resp.data))
           this.formDialogSurvey.show = false
-          this.formDialogSurvey.data = {
-            onchain: false,
-            lnbits: false,
-            description: '',
-            time: null,
-            amount: null
-          }
         } catch (error) {
           LNbits.utils.notifyApiError(error)
         }
@@ -552,6 +500,7 @@
 
       sendFormDataSurvey: async function () {
         console.log('### sendFormDataSurvey')
+        this.createSurvey(this.formDialogSurvey.data)
       },
 
       exportsurveyCSV: function () {

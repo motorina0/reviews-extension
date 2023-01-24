@@ -4,10 +4,8 @@ async def m001_initial(db):
    await db.execute(
        """
        CREATE TABLE reviews.surveys (
+          "user" TEXT,
            id TEXT PRIMARY KEY,
-           wallet TEXT NOT NULL,
            meta TEXT DEFAULT '{}'
        );
    """)
-
-   
