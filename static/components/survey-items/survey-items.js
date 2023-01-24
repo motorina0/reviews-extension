@@ -4,11 +4,10 @@ async function surveyItems(path) {
     name: 'survey-items',
     template,
 
-    props: ['survey-id', 'adminkey', 'inkey'],
+    props: ['survey-id', 'items-json', 'adminkey', 'inkey'],
     data: function () {
       return {
         items: [],
-
         formDialogItem: {
           show: false,
           data: {
@@ -90,6 +89,8 @@ async function surveyItems(path) {
     created: async function () {
       if (this.adminkey || this.inkey) {
         await this.getSurveyItems()
+      } else if (this.itemsJson) {
+        this.items = JSON.parse(this.itemsJson)
       }
     }
   })

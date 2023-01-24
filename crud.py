@@ -37,6 +37,20 @@ async def get_survey(user_id: str, survey_id: str) -> Optional[Survey]:
 
     return Survey.parse_obj({"id": row["id"], **json.loads(row["meta"])}) if row else None
 
+async def get_public_survey(survey_id: str) -> Optional[dict]:
+    row = await db.fetchone("""SELECT * FROM reviews.surveys WHERE id = ?""", (survey_id,))
+
+    if row:
+        survey = Survey.parse_obj({"id": row["id"], **json.loads(row["meta"])})
+
+        return {
+            "id": survey.id,
+            "type": survey.type,
+            "name": survey.name,
+            "description":survey.description,
+            }
+    return None
+
 async def get_surveys(user_id: str) -> List[Survey]:
     rows = await db.fetchall("""SELECT * FROM reviews.surveys WHERE "user" = ?""", (user_id,))
 
@@ -78,6 +92,12 @@ async def get_survey_items(user_id: str, survey_id: str) -> List[SurveyItem]:
     rows = await db.fetchall("""SELECT * FROM reviews.survey_items WHERE "user" = ? AND survey_id = ?""", (user_id, survey_id,))
 
     return [SurveyItem.parse_obj({"id": row["id"], "survey_id": row["survey_id"], **json.loads(row["meta"])}) for row in rows]
+
+async def get_public_survey_items(survey_id: str) -> List[SurveyItem]:
+    rows = await db.fetchall("""SELECT * FROM reviews.survey_items WHERE survey_id = ?""", (survey_id,))
+
+    return [SurveyItem.parse_obj({"id": row["id"], "survey_id": row["survey_id"], **json.loads(row["meta"])}) for row in rows]
+
 
 async def delete_survey_item(user_id: str, survey_item_id: str):
    await db.execute("""DELETE FROM reviews.survey_items WHERE "user" = ? AND id = ?""", (user_id, survey_item_id,))

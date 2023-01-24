@@ -1,0 +1,15 @@
+{% extends "public.html" %} {% block page %}
+<div class="row items-center q-mt-md justify-center">
+  <div class="col-12 col-sm-6 col-md-5 col-lg-4">
+    <survey-items
+      survey-id="{{survey.id}}"
+      items-json="{{items}}"
+    ></survey-items>
+  </div>
+</div>
+{% endblock %} {% block styles %} {% endblock %} {% block scripts %}
+
+<script src="{{ url_for('reviews_static', path='js/utils.js') }}"></script>
+<script src="{{ url_for('reviews_static', path='components/survey-items/survey-items.js') }}"></script>
+<script src="{{ url_for('reviews_static', path='js/survey.js') }}"></script>
+{% endblock %}
