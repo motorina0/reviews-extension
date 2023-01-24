@@ -4,10 +4,10 @@ from typing import List, Optional
 from lnbits.helpers import urlsafe_short_hash
 
 from . import db
-from .models import CreateSurvey, Survey
+from .models import PartialSurvey, Survey
 
 
-async def create_survey(user_id: str, data: CreateSurvey) -> Survey:
+async def create_survey(user_id: str, data: PartialSurvey) -> Survey:
     survey_id = urlsafe_short_hash()
     meta = data.dict()
 

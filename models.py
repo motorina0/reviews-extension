@@ -13,24 +13,20 @@ class SurveyType(str, Enum):
     LIKES = 'likes'
 
 
-class Survey(BaseModel):
-   id: str
+class PartialSurvey(BaseModel):
    wallet: str
    type: "SurveyType"
    name: str
    amount: int # sats required to vote
+   description: Optional[str]
+   expiry_date: Optional[str] # ISO8601
    allow_comments = True
    show_results = True
-   description: Optional[str]
+
+class Survey(PartialSurvey):
+   id: str
 
 
-
-class CreateSurvey(BaseModel):
-   wallet: str
-   type: "SurveyType"
-   name: str
-   amount: int
-   description: Optional[str]
 
 class SurveyItem(BaseModel):
     id: str

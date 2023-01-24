@@ -15,11 +15,11 @@ from lnbits.decorators import (
 
 from . import reviews_ext
 from .crud import create_survey, delete_survey, get_surveys
-from .models import CreateSurvey, Survey
+from .models import PartialSurvey, Survey
 
 
 @reviews_ext.post("/api/v1/survey")
-async def api_create_survey(data: CreateSurvey, wallet: WalletTypeInfo = Depends(require_admin_key)) -> Survey:
+async def api_create_survey(data: PartialSurvey, wallet: WalletTypeInfo = Depends(require_admin_key)) -> Survey:
     
     try:
         survey = await create_survey(wallet.wallet.user, data)

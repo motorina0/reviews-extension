@@ -73,7 +73,7 @@
                 {{props.row.description}}
               </q-td>
               <q-td key="type" :props="props" :class="">
-                <div>{{props.row.type}}</div>
+                <div>{{getSurveyTypeLabel(props.row.type)}}</div>
               </q-td>
               <q-td key="amount" :props="props" :class="">
                 <div>{{props.row.amount}}</div>
@@ -281,6 +281,10 @@
           amount: '100',
           wallet: ''
         }
+      },
+      getSurveyTypeLabel: function (surveyType) {
+        const type = this.surveyTypes.find(s => (s.id = surveyType))
+        return type ? type.label : '?'
       },
       openCreateSurveyDialog: function () {
         this.formDialogSurvey.data = this.getDefaultSurveyData()
