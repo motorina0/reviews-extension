@@ -8,25 +8,21 @@
         @click="showNewItemDialog()"
         >Add Item</q-btn
       >
-      <q-separator class="q-mt-sm"></q-separator>
     </div>
   </div>
   <div class="row items-center no-wrap q-mb-md">
     <div class="col-12 q-pr-lg">
       <q-list>
         <q-item clickable v-for="item in items" :key="item.id">
+          <q-item-section v-if="adminkey" avatar>
+            <q-icon
+              color="pink"
+              name="cancel"
+              @click="deleteSurveyItem(item.id)"
+            />
+          </q-item-section>
           <q-item-section>
-            <q-item-label
-              >{{item.name}}
-              <q-btn
-                unelevated
-                color="pink"
-                size="sm"
-                icon="cancel"
-                class="float-right"
-                @click="deleteSurveyItem(item.id)"
-              ></q-btn>
-            </q-item-label>
+            <q-item-label>{{item.name}} </q-item-label>
             <q-item-label caption>{{item.description}} </q-item-label>
 
             <q-separator class="q-mt-sm"></q-separator>
