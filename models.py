@@ -22,7 +22,6 @@ class Survey(BaseModel):
    allow_comments = True
    show_results = True
    description: Optional[str]
-   lnurl_id: Optional[str]
 
 
 

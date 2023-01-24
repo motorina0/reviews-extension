@@ -55,17 +55,6 @@
           :pagination.sync="surveysTable.pagination"
           :filter="filter"
         >
-          <template v-slot:header="props">
-            <q-tr :props="props">
-              <q-th auto-width></q-th>
-              <q-th auto-width>Name </q-th>
-              <q-th auto-width>Description</q-th>
-              <q-th auto-width>Type</q-th>
-              <q-th auto-width>Amount (sats)</q-th>
-              <q-th auto-width></q-th>
-            </q-tr>
-          </template>
-
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td auto-width>
@@ -79,186 +68,36 @@
                 />
               </q-td>
 
-              <q-td auto-width>
-                <q-badge
-                  v-if="props.row.time_elapsed && props.row.balance < props.row.amount"
-                  color="red"
-                >
-                  <a
-                    class="text-secondary"
-                    :href="props.row.displayUrl"
-                    target="_blank"
-                    style="color: unset; text-decoration: none"
-                    >expired</a
-                  >
-                </q-badge>
-
-                <q-badge
-                  v-else-if="props.row.balance >= props.row.amount"
-                  color="green"
-                >
-                  <a
-                    class="text-secondary"
-                    :href="props.row.displayUrl"
-                    target="_blank"
-                    style="color: unset; text-decoration: none"
-                    >paid</a
-                  >
-                </q-badge>
-
-                <q-badge v-else color="blue"
-                  ><a
-                    class="text-secondary"
-                    :href="props.row.displayUrl"
-                    target="_blank"
-                    style="color: unset; text-decoration: none"
-                    >waiting</a
-                  >
-                </q-badge>
-              </q-td>
+              <q-td auto-width> {{props.row.name}} </q-td>
               <q-td key="description" :props="props" :class="">
-                <a
-                  class="text-secondary"
-                  :href="props.row.displayUrl"
-                  target="_blank"
-                  style="color: unset; text-decoration: none"
-                  >{{props.row.description}}</a
-                >
+                {{props.row.description}}
               </q-td>
-              <q-td key="timeLeft" :props="props" :class="">
-                <div>{{props.row.timeLeft}}</div>
-                <q-linear-progress
-                  v-if="props.row.timeLeft"
-                  :value="props.row.progress"
-                  color="secondary"
-                >
-                </q-linear-progress>
-              </q-td>
-              <q-td key="time to pay" :props="props" :class="">
-                <div>{{props.row.time}}</div>
+              <q-td key="type" :props="props" :class="">
+                <div>{{props.row.type}}</div>
               </q-td>
               <q-td key="amount" :props="props" :class="">
                 <div>{{props.row.amount}}</div>
               </q-td>
-              <q-td key="balance" :props="props" :class="">
-                <div>{{props.row.balance}}</div>
-              </q-td>
-              <q-td key="pendingBalance" :props="props" :class="">
-                <div>
-                  {{props.row.pendingBalance ? props.row.pendingBalance : ''}}
-                </div>
-              </q-td>
-              <q-td key="onchain address" :props="props" :class="">
-                <a
-                  class="text-secondary"
-                  :href="props.row.displayUrl"
-                  target="_blank"
-                  style="color: unset; text-decoration: none"
-                  >{{props.row.onchainaddress}}</a
-                >
-              </q-td>
             </q-tr>
             <q-tr v-show="props.row.expanded" :props="props">
               <q-td colspan="100%">
-                <div
-                  v-if="props.row.onchainwallet"
-                  class="row items-center q-mt-md q-mb-lg"
-                >
-                  <div class="col-2 q-pr-lg">Onchain Wallet:</div>
-                  <div class="col-4 q-pr-lg">
-                    {{getOnchainWalletName(props.row.onchainwallet)}}
-                  </div>
-                </div>
-                <div
-                  v-if="props.row.wallet"
-                  class="row items-center q-mt-md q-mb-lg"
-                >
-                  <div class="col-2 q-pr-lg">LNbits Wallet:</div>
-                  <div class="col-4 q-pr-lg">
-                    {{getwalletName(props.row.wallet)}}
-                  </div>
-                </div>
-
-                <div
-                  v-if="props.row.completelink || props.row.completelinktext"
-                  class="row items-center q-mt-md q-mb-lg"
-                >
-                  <div class="col-2 q-pr-lg">Completed Link:</div>
-                  <div class="col-4 q-pr-lg">
-                    <a
-                      class="text-secondary"
-                      :href="props.row.completelink"
-                      target="_blank"
-                      style="color: unset; text-decoration: none"
-                      >{{props.row.completelinktext ||
-                      props.row.completelink}}</a
-                    >
-                  </div>
-                </div>
-                <div
-                  v-if="props.row.webhook"
-                  class="row items-center q-mt-md q-mb-lg"
-                >
-                  <div class="col-2 q-pr-lg">Webhook:</div>
-                  <div class="col-4 q-pr-lg">
-                    <a
-                      class="text-secondary"
-                      :href="props.row.webhook"
-                      target="_blank"
-                      style="color: unset; text-decoration: none"
-                      >{{props.row.webhook}}</a
-                    >
-                  </div>
-                  <div class="col-4 q-pr-lg">
-                    <q-badge
-                      v-if="props.row.webhook_message"
-                      @click="showWebhookResponseDialog(props.row.extra.webhook_response)"
-                      color="blue"
-                      class="cursor-pointer"
-                    >
-                      {{props.row.webhook_message }}
-                    </q-badge>
-                  </div>
-                </div>
                 <div class="row items-center q-mt-md q-mb-lg">
                   <div class="col-2 q-pr-lg">ID:</div>
                   <div class="col-4 q-pr-lg">{{props.row.id}}</div>
-                </div>
-                <div class="row items-center q-mt-md q-mb-lg">
-                  <div class="col-2 q-pr-lg"></div>
                   <div class="col-6 q-pr-lg">
-                    <q-btn
-                      unelevated
-                      color="gray"
-                      outline
-                      type="a"
-                      :href="props.row.displayUrl"
-                      target="_blank"
-                      class="float-left q-mr-lg"
-                      >Details</q-btn
-                    >
-                    <q-btn
-                      unelevated
-                      color="gray"
-                      outline
-                      type="a"
-                      @click="refreshBalance(props.row)"
-                      target="_blank"
-                      class="float-left"
-                      >Refresh Balance</q-btn
-                    >
-                  </div>
-                  <div class="col-4 q-pr-lg">
                     <q-btn
                       unelevated
                       color="pink"
                       icon="cancel"
-                      @click="deleteSurveyLink(props.row.id)"
+                      class="float-right"
+                      @click="deleteSurvey(props.row.id)"
                       >Delete</q-btn
                     >
                   </div>
-                  <div class="col-4"></div>
-                  <div class="col-2 q-pr-lg"></div>
+                </div>
+                <div class="row items-center q-mt-md q-mb-lg">
+                  <div class="col-2 q-pr-lg">Items:</div>
+                  <div class="col-4 q-pr-lg"></div>
                 </div>
               </q-td>
             </q-tr>
@@ -397,6 +236,12 @@
         surveysTable: {
           columns: [
             {
+              name: '',
+              align: 'left',
+              label: '',
+              field: ''
+            },
+            {
               name: 'name',
               align: 'left',
               label: 'Name',
@@ -445,7 +290,7 @@
         try {
           const {data} = await LNbits.api.request(
             'GET',
-            '/reviews/api/v1/surveys',
+            '/reviews/api/v1/survey',
             this.g.user.wallets[0].inkey
           )
           this.surveyLinks = data.map(c =>
@@ -454,6 +299,7 @@
               this.surveyLinks.find(old => old.id === c.id)
             )
           )
+          console.log('### surveyLinks', this.surveyLinks)
         } catch (error) {
           LNbits.utils.notifyApiError(error)
         }
@@ -477,10 +323,10 @@
         }
       },
 
-      deleteSurveyLink: function (surveyId) {
+      deleteSurvey: function (surveyId) {
         const link = _.findWhere(this.surveyLinks, {id: surveyId})
         LNbits.utils
-          .confirmDialog('Are you sure you want to delete this pay link?')
+          .confirmDialog('Are you sure you want to delete this survet?')
           .onOk(async () => {
             try {
               const response = await LNbits.api.request(
@@ -512,7 +358,7 @@
       }
     },
     created: async function () {
-      // await this.getSurveys()
+      await this.getSurveys()
     }
   })
 </script>
