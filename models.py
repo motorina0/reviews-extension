@@ -28,15 +28,14 @@ class Survey(PartialSurvey):
 
 
 
-class SurveyItem(BaseModel):
-    id: str
+class PartialSurveyItem(BaseModel):
     survey_id: str
     name: str
     description: str
-    lnurl_id: Optional[str]
 
-
-
+class SurveyItem(PartialSurveyItem):
+    id: str
+    lnurl_id: Optional[str] #todo: remove optional
 
 
 class Review(BaseModel):
