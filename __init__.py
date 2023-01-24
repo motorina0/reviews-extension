@@ -7,21 +7,21 @@ from lnbits.db import Database
 from lnbits.helpers import template_renderer
 from lnbits.tasks import catch_everything_and_restart
 
-db = Database("ext_example")
+db = Database("ext_reviews")
 
-example_ext: APIRouter = APIRouter(prefix="/example", tags=["example"])
+reviews_ext: APIRouter = APIRouter(prefix="/reviews", tags=["reviews"])
 
-example_static_files = [
+reviews_static_files = [
     {
-        "path": "/example/static",
-        "app": StaticFiles(packages=[("lnbits", "extensions/example/static")]),
-        "name": "example_static",
+        "path": "/reviews/static",
+        "app": StaticFiles(packages=[("lnbits", "extensions/reviews/static")]),
+        "name": "reviews_static",
     }
 ]
 
 
-def example_renderer():
-    return template_renderer(["lnbits/extensions/example/templates"])
+def reviews_renderer():
+    return template_renderer(["lnbits/extensions/reviews/templates"])
 
 
 from .tasks import wait_for_paid_invoices

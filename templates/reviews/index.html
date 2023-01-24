@@ -126,7 +126,7 @@
 
                   <code class="bg-grey-3 text-black">views.py</code> is used for
                   setting application routes:
-                  <img src="./static/fastapi-example.png" /><br /><br />
+                  <img src="./static/fastapi-reviews.png" /><br /><br />
                   <code class="bg-grey-3 text-black">views_api.py</code> is used
                   for setting application API endpoints:<br />
                   <img src="./static/fastapi-example2.png" />
@@ -404,11 +404,11 @@
         LNbits.api
           .request(
             'GET', // Type of request
-            '/example/api/v1/test/' + theData, // URL of the endpoint
+            '/reviews/api/v1/test/' + theData, // URL of the endpoint
             this.g.user.wallets[0].inkey // Often endpoints require a key
           )
           .then(response => {
-            this.exampleData = response.data.map(someMapObject) // Often whats returned is mapped onto some model
+            this.reviewsData = response.data.map(someMapObject) // Often whats returned is mapped onto some model
           })
           .catch(error => {
             LNbits.utils.notifyApiError(error) // Error will be passed to the frontend
