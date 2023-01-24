@@ -8,8 +8,11 @@ class Survey(BaseModel):
    id: str
    wallet: str
    type: "SurveyType"
+   name: str
+   amount: int # sats required to vote
    allow_comments = True
    show_results = True
+   description: Optional[str]
    lnurl_id: Optional[str]
    items: List["SurveyItem"] = []
 

@@ -5,7 +5,7 @@
     <q-card>
       <q-card-section>
         {% raw %}
-        <q-btn unelevated color="primary" @click="formDialogSurvey.show = true"
+        <q-btn unelevated color="primary" @click="openCreateSurveyDialog()"
           >New survey
         </q-btn>
       </q-card-section>
@@ -286,6 +286,78 @@
       </q-card-section>
     </q-card>
   </div>
+
+  <q-dialog v-model="formDialogSurvey.show" position="top">
+    <q-card class="q-pa-lg q-pt-xl lnbits__dialog-card">
+      <q-form @submit="sendFormDataSurvey" class="q-gutter-md">
+        <q-input
+          filled
+          dense
+          v-model.trim="formDialogSurvey.data.name"
+          type="text"
+          label="*Name"
+        ></q-input>
+        <q-input
+          filled
+          dense
+          v-model.trim="formDialogSurvey.data.description"
+          type="text"
+          label="Description"
+        ></q-input>
+
+        <q-select
+          filled
+          dense
+          emit-value
+          v-model="formDialogSurvey.data.type"
+          :options="surveyTypes"
+          label="Survey Type"
+          class="q-mt-lg"
+        >
+        </q-select>
+
+        <q-input
+          filled
+          dense
+          v-model.trim="formDialogSurvey.data.amount"
+          type="number"
+          label="*Amount (how many sats it costs to vote)"
+        ></q-input>
+
+        <q-select
+          filled
+          dense
+          emit-value
+          v-model="formDialogSurvey.data.lnbitsWallet"
+          :options="g.user.walletOptions"
+          label="Wallet *"
+        >
+        </q-select>
+        <q-toggle
+          v-model="formDialogSurvey.showAdvanced"
+          label="Show advanced options"
+        ></q-toggle>
+        <div v-if="formDialogSurvey.showAdvanced" class="row">
+          <div class="col">xxx</div>
+        </div>
+        <div class="row q-mt-lg">
+          <q-btn
+            unelevated
+            color="primary"
+            :disable="!formDialogSurvey.data.name || 
+            !formDialogSurvey.data.type ||
+            !formDialogSurvey.data.lnbitsWallet ||
+            !formDialogSurvey.data.amount"
+            type="submit"
+            >Create Survey</q-btn
+          >
+          <q-btn v-close-popup flat color="grey" class="q-ml-auto"
+            >Cancel</q-btn
+          >
+        </div>
+      </q-form>
+    </q-card>
+  </q-dialog>
 </div>
 {% endblock %} {% block scripts %} {{ window_vars(user) }}
 
@@ -301,6 +373,31 @@
       return {
         filter: '',
         surveyLinks: [],
+        formDialogSurvey: {
+          show: false,
+          showAdvanced: false,
+          data: {
+            name: '',
+            description: '',
+            type: '',
+            amount: '',
+            lnbitsWallet: ''
+          }
+        },
+        surveyTypes: [
+          {
+            id: 'rating',
+            label: 'Rating (rate one item from a list)'
+          },
+          {
+            id: 'poll',
+            label: 'Poll (choose one item from a list)'
+          },
+          {
+            id: 'likes',
+            label: 'Likes (like or dislike an item)'
+          }
+        ],
 
         surveysTable: {
           columns: [
@@ -378,6 +475,19 @@
       }
     },
     methods: {
+      getDefaultSurveyData: function () {
+        return {
+          name: '',
+          description: '',
+          type: this.surveyTypes[0],
+          amount: '100',
+          lnbitsWallet: ''
+        }
+      },
+      openCreateSurveyDialog: function () {
+        this.formDialogSurvey.data = this.getDefaultSurveyData()
+        this.formDialogSurvey.show = true
+      },
       getSurveys: async function () {
         try {
           const {data} = await LNbits.api.request(
@@ -438,6 +548,10 @@
               LNbits.utils.notifyApiError(error)
             }
           })
+      },
+
+      sendFormDataSurvey: async function () {
+        console.log('### sendFormDataSurvey')
       },
 
       exportsurveyCSV: function () {
