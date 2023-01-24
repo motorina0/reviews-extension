@@ -5,10 +5,9 @@
     <q-card>
       <q-card-section>
         {% raw %}
-        <q-btn unelevated color="primary" @click="formDialogCharge.show = true"
-          >New charge
+        <q-btn unelevated color="primary" @click="formDialogSurvey.show = true"
+          >New survey
         </q-btn>
-
       </q-card-section>
     </q-card>
 
@@ -16,7 +15,7 @@
       <q-card-section>
         <div class="row items-center no-wrap q-mb-md">
           <div class="col">
-            <h5 class="text-subtitle1 q-my-none">Charges</h5>
+            <h5 class="text-subtitle1 q-my-none">Surveys</h5>
           </div>
 
           <div class="col q-pr-lg">
@@ -38,7 +37,7 @@
               <q-menu auto-close>
                 <q-list style="min-width: 100px">
                   <q-item clickable>
-                    <q-item-section @click="exportchargeCSV"
+                    <q-item-section @click="exportsurveyCSV"
                       >Export to CSV</q-item-section
                     >
                   </q-item>
@@ -50,10 +49,10 @@
         <q-table
           flat
           dense
-          :data="chargeLinks"
+          :data="surveyLinks"
           row-key="id"
-          :columns="chargesTable.columns"
-          :pagination.sync="chargesTable.pagination"
+          :columns="surveysTable.columns"
+          :pagination.sync="surveysTable.pagination"
           :filter="filter"
         >
           <template v-slot:header="props">
@@ -258,7 +257,7 @@
                       unelevated
                       color="pink"
                       icon="cancel"
-                      @click="deleteChargeLink(props.row.id)"
+                      @click="deleteSurveyLink(props.row.id)"
                       >Delete</q-btn
                     >
                   </div>
@@ -272,7 +271,6 @@
         </q-table>
       </q-card-section>
     </q-card>
-
   </div>
 
   <div class="col-12 col-md-5 q-gutter-y-md">
@@ -288,7 +286,6 @@
       </q-card-section>
     </q-card>
   </div>
-
 </div>
 {% endblock %} {% block scripts %} {{ window_vars(user) }}
 
@@ -303,10 +300,9 @@
     data: function () {
       return {
         filter: '',
-        chargeLinks: [],
+        surveyLinks: [],
 
-
-        chargesTable: {
+        surveysTable: {
           columns: [
             {
               name: 'theId',
@@ -378,23 +374,21 @@
           pagination: {
             rowsPerPage: 10
           }
-        },
-
+        }
       }
     },
     methods: {
-
-      getCharges: async function () {
+      getSurveys: async function () {
         try {
           const {data} = await LNbits.api.request(
             'GET',
-            '/reviews/api/v1/charges',
+            '/reviews/api/v1/surveys',
             this.g.user.wallets[0].inkey
           )
-          this.chargeLinks = data.map(c =>
-            mapCharge(
+          this.surveyLinks = data.map(c =>
+            mapSurvey(
               c,
-              this.chargeLinks.find(old => old.id === c.id)
+              this.surveyLinks.find(old => old.id === c.id)
             )
           )
         } catch (error) {
@@ -402,18 +396,18 @@
         }
       },
 
-      createCharge: async function (wallet, data) {
+      createSurvey: async function (wallet, data) {
         try {
           const resp = await LNbits.api.request(
             'POST',
-            '/reviews/api/v1/charge',
+            '/reviews/api/v1/survey',
             wallet,
             data
           )
 
-          this.chargeLinks.unshift(mapCharge(resp.data))
-          this.formDialogCharge.show = false
-          this.formDialogCharge.data = {
+          this.surveyLinks.unshift(mapSurvey(resp.data))
+          this.formDialogSurvey.show = false
+          this.formDialogSurvey.data = {
             onchain: false,
             lnbits: false,
             description: '',
@@ -425,20 +419,20 @@
         }
       },
 
-      deleteChargeLink: function (chargeId) {
-        const link = _.findWhere(this.chargeLinks, {id: chargeId})
+      deleteSurveyLink: function (surveyId) {
+        const link = _.findWhere(this.surveyLinks, {id: surveyId})
         LNbits.utils
           .confirmDialog('Are you sure you want to delete this pay link?')
           .onOk(async () => {
             try {
               const response = await LNbits.api.request(
                 'DELETE',
-                '/reviews/api/v1/charge/' + chargeId,
+                '/reviews/api/v1/survey/' + surveyId,
                 this.g.user.wallets[0].adminkey
               )
 
-              this.chargeLinks = _.reject(this.chargeLinks, function (obj) {
-                return obj.id === chargeId
+              this.surveyLinks = _.reject(this.surveyLinks, function (obj) {
+                return obj.id === surveyId
               })
             } catch (error) {
               LNbits.utils.notifyApiError(error)
@@ -446,18 +440,16 @@
           })
       },
 
-      exportchargeCSV: function () {
+      exportsurveyCSV: function () {
         LNbits.utils.exportCSV(
-          this.chargesTable.columns,
-          this.chargeLinks,
-          'charges'
+          this.surveysTable.columns,
+          this.surveyLinks,
+          'surveys'
         )
       }
     },
     created: async function () {
-
-      // await this.getCharges()
- 
+      // await this.getSurveys()
     }
   })
 </script>
