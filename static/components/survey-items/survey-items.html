@@ -1,1 +1,71 @@
-<span>YY</span>
+<div>
+  <div class="row items-center no-wrap q-mb-md">
+    <div class="col-12 q-pr-lg">
+      <q-btn
+        unelevated
+        color="secondary"
+        icon="add"
+        @click="showNewItemDialog()"
+        >Add Item</q-btn
+      >
+    </div>
+  </div>
+  <div class="row items-center no-wrap q-mb-md">
+    <div class="col-12 q-pr-lg">
+      <q-list>
+        <q-item clickable v-for="item in items" :key="item.id">
+          <q-item-section>
+            <q-item-label
+              >{{item.name}}
+              <q-btn
+                unelevated
+                color="pink"
+                size="sm"
+                icon="cancel"
+                class="float-right"
+                @click="deleteSurveyItem(item.id)"
+              ></q-btn>
+            </q-item-label>
+            <q-item-label caption>{{item.description}}</q-item-label>
+
+            <q-separator></q-separator>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
+  </div>
+  <q-dialog v-model="formDialogItem.show" position="top">
+    <q-card class="q-pa-lg q-pt-xl lnbits__dialog-card">
+      <q-form @submit="submitSurveyItem" class="q-gutter-md">
+        <q-input
+          filled
+          dense
+          v-model.trim="formDialogItem.data.name"
+          type="text"
+          label="*Name"
+        ></q-input>
+        <q-input
+          filled
+          dense
+          v-model.trim="formDialogItem.data.description"
+          type="text"
+          label="*Description"
+        ></q-input>
+
+        <div class="row q-mt-lg">
+          <q-btn
+            unelevated
+            color="primary"
+            :disable="!formDialogItem.data.name || 
+            !formDialogItem.data.description"
+            type="submit"
+            >Add Item</q-btn
+          >
+          <q-btn v-close-popup flat color="grey" class="q-ml-auto"
+            >Cancel</q-btn
+          >
+        </div>
+      </q-form>
+    </q-card>
+  </q-dialog>
+</div>

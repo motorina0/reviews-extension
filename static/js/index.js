@@ -113,7 +113,6 @@ const reviews = async () => {
       },
 
       createSurvey: async function (data) {
-        console.log('### data', data)
         try {
           data.type = data.type.id
           const resp = await LNbits.api.request(
@@ -131,7 +130,6 @@ const reviews = async () => {
       },
 
       deleteSurvey: function (surveyId) {
-        const link = _.findWhere(this.surveyLinks, {id: surveyId})
         LNbits.utils
           .confirmDialog('Are you sure you want to delete this survet?')
           .onOk(async () => {

@@ -54,13 +54,8 @@ async def create_survey_item(user_id: str, data: PartialSurveyItem) -> SurveyIte
 
     await db.execute(
         """
-        INSERT INTO reviews.survey_items (
-            "user",
-            id,
-            survey_id
-            meta
-        )
-        VALUES (?, ?, ?)
+        INSERT INTO reviews.survey_items ( "user",  id,  survey_id, meta)
+        VALUES (?, ?, ?, ?)
         """,
         (
             user_id,
@@ -69,7 +64,7 @@ async def create_survey_item(user_id: str, data: PartialSurveyItem) -> SurveyIte
             json.dumps(meta)
         ),
     )
-    survey_item = await get_survey_item(user_id, data.survey_id,)
+    survey_item = await get_survey_item(user_id, survey_item_id,)
     assert survey_item, "Created survey_item item cannot be retrieved"
     return survey_item
 

@@ -91,14 +91,18 @@
                       icon="cancel"
                       class="float-right"
                       @click="deleteSurvey(props.row.id)"
-                      >Delete</q-btn
+                      >Delete Survey</q-btn
                     >
                   </div>
                 </div>
                 <div class="row items-center q-mt-md q-mb-lg">
-                  <div class="col-2 q-pr-lg">Items:</div>
+                  <div class="col-2 q-pr-lg"></div>
                   <div class="col-10 q-pr-lg">
-                    <survey-items></survey-items>
+                    <survey-items
+                      :survey-id="props.row.id"
+                      :adminkey="g.user.wallets[0].adminkey"
+                      :inkey="g.user.wallets[0].inkey"
+                    ></survey-items>
                   </div>
                 </div>
               </q-td>

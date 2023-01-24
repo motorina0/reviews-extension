@@ -4,68 +4,17 @@ async function surveyItems(path) {
     name: 'survey-items',
     template,
 
-    props: [
-      'addresses',
-      'accounts',
-      'mempool-endpoint',
-      'inkey',
-      'sats-denominated'
-    ],
+    props: ['survey-id', 'adminkey', 'inkey'],
     data: function () {
       return {
-        show: false,
-        history: [],
-        selectedWallet: null,
-        note: '',
-        filterOptions: [
-          'Show Change Addresses',
-          'Show Gap Addresses',
-          'Only With Amount'
-        ],
-        filterValues: [],
+        items: [],
 
-        addressesTable: {
-          columns: [
-            {
-              name: 'expand',
-              align: 'left',
-              label: ''
-            },
-            {
-              name: 'address',
-              align: 'left',
-              label: 'Address',
-              field: 'address',
-              sortable: true
-            },
-            {
-              name: 'amount',
-              align: 'left',
-              label: 'Amount',
-              field: 'amount',
-              sortable: true
-            },
-            {
-              name: 'note',
-              align: 'left',
-              label: 'Note',
-              field: 'note',
-              sortable: true
-            },
-            {
-              name: 'wallet',
-              align: 'left',
-              label: 'Account',
-              field: 'wallet',
-              sortable: true
-            }
-          ],
-          pagination: {
-            rowsPerPage: 0,
-            sortBy: 'amount',
-            descending: true
-          },
-          filter: ''
+        formDialogItem: {
+          show: false,
+          data: {
+            name: '',
+            description: ''
+          }
         }
       }
     },
@@ -73,9 +22,73 @@ async function surveyItems(path) {
     methods: {
       satBtc(val, showUnit = true) {
         return satOrBtc(val, showUnit, this.satsDenominated)
+      },
+
+      showNewItemDialog: function () {
+        this.formDialogItem.data = {
+          name: '',
+          description: ''
+        }
+        this.formDialogItem.show = true
+      },
+
+      submitSurveyItem: function () {
+        this.formDialogItem.show = false
+        this.addSurveyItem(this.formDialogItem.data)
+      },
+
+      getSurveyItems: async function () {
+        try {
+          const {data} = await LNbits.api.request(
+            'GET',
+            '/reviews/api/v1/survey/item/' + this.surveyId,
+            this.inkey
+          )
+          this.items = data
+        } catch (error) {
+          LNbits.utils.notifyApiError(error)
+        }
+      },
+
+      addSurveyItem: async function (data) {
+        try {
+          const resp = await LNbits.api.request(
+            'POST',
+            '/reviews/api/v1/survey/item',
+            this.adminkey,
+            {...data, survey_id: this.surveyId}
+          )
+
+          this.items.unshift(resp.data)
+          this.formDialogSurvey.show = false
+        } catch (error) {
+          LNbits.utils.notifyApiError(error)
+        }
+      },
+
+      deleteSurveyItem: async function (surveyItemId) {
+        LNbits.utils
+          .confirmDialog('Are you sure you want to delete this item?')
+          .onOk(async () => {
+            try {
+              await LNbits.api.request(
+                'DELETE',
+                '/reviews/api/v1/survey/item/' + surveyItemId,
+                this.adminkey
+              )
+
+              this.items = _.reject(this.items, function (obj) {
+                return obj.id === surveyItemId
+              })
+            } catch (error) {
+              LNbits.utils.notifyApiError(error)
+            }
+          })
       }
     },
 
-    created: async function () {}
+    created: async function () {
+      await this.getSurveyItems()
+    }
   })
 }
