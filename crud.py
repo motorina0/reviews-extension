@@ -45,7 +45,7 @@ async def get_public_survey(survey_id: str) -> Optional[dict]:
 
         return {
             "id": survey.id,
-            "type": survey.type,
+            "type": survey.type.value,
             "name": survey.name,
             "description":survey.description,
             }
