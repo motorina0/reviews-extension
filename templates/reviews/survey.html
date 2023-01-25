@@ -1,15 +1,47 @@
 {% extends "public.html" %} {% block page %}
 <div class="row items-center q-mt-md justify-center">
   <div class="col-12 col-sm-6 col-md-5 col-lg-4">
-    <survey-items
+    <!-- <survey-items
       survey-id="{{survey.id}}"
       items-json="{{items}}"
-    ></survey-items>
+    ></survey-items> -->
+
+    {% raw %}
+    <q-card  v-for="item in items" class="q-mb-sm">
+      <!-- <q-card-section>
+        <div class="text-h6">{{item.name}}</div>
+        <div class="text-subtitle2">{{item.description}}</div>
+      </q-card-section> -->
+      <q-card-section>
+        <q-item-label>Bar XYZ</q-item-label>
+        <q-item-label caption>Have a drink.</q-item-label>
+      </q-card-section>
+    </q-card>
+    {% endraw %}
   </div>
 </div>
 {% endblock %} {% block styles %} {% endblock %} {% block scripts %}
 
 <script src="{{ url_for('reviews_static', path='js/utils.js') }}"></script>
-<script src="{{ url_for('reviews_static', path='components/survey-items/survey-items.js') }}"></script>
-<script src="{{ url_for('reviews_static', path='js/survey.js') }}"></script>
+<!-- <script src="{{ url_for('reviews_static', path='components/survey-items/survey-items.js') }}"></script>
+<script src="{{ url_for('reviews_static', path='js/survey.js') }}"></script> -->
+
+<script>
+  Vue.component(VueQrcode.name, VueQrcode)
+
+  new Vue({
+    el: '#vue',
+    mixins: [windowMixin],
+    data: function () {
+      return {
+        items: []
+      }
+    },
+    methods: {},
+    created: async function () {
+      this.items = JSON.parse('{{items | tojson}}')
+      console.log('### items', this.items)
+    }
+  })
+</script>
 {% endblock %}

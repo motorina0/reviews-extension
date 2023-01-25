@@ -26,10 +26,10 @@ async def index(
 async def public_survey(survey_id: str,
     request: Request,
 ):
-    survey = await get_public_survey(survey_id)
+    public_survey = await get_public_survey(survey_id)
     survey_items = await get_public_survey_items(survey_id)
-    items = [i.dict() for i in survey_items]
+    public_items = [i.dict() for i in survey_items]
 
     return reviews_renderer().TemplateResponse(
-        "reviews/survey.html", {"request": request, "survey": survey, "items": json.dumps(items)}
+        "reviews/survey.html", {"request": request, "survey": public_survey, "items": public_items}
     )
